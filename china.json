@@ -1,0 +1,80 @@
+[
+    {
+        "date": "2020-01-20",
+        "confirmed": 291,
+        "dead": 6,
+        "cured": 25
+    },
+    {
+        "date": "2020-01-21",
+        "confirmed": 440,
+        "dead": 9,
+        "cured": 25
+    },
+    {
+        "date": "2020-01-22",
+        "confirmed": 571,
+        "dead": 17,
+        "cured": 25
+    },
+    {
+        "date": "2020-01-23",
+        "confirmed": 830,
+        "dead": 25,
+        "cured": 34
+    },
+    {
+        "date": "2020-01-24",
+        "confirmed": 1287,
+        "dead": 41,
+        "cured": 38
+    },
+    {
+        "date": "2020-01-25",
+        "confirmed": 1975,
+        "dead": 56,
+        "cured": 49
+    },
+    {
+        "date": "2020-01-26",
+        "confirmed": 2744,
+        "dead": 80,
+        "cured": 51
+    },
+    {
+        "date": "2020-01-27",
+        "confirmed": 4515,
+        "dead": 106,
+        "cured": 60
+    },
+    {
+        "date": "2020-01-28",
+        "confirmed": 5974,
+        "dead": 132,
+        "cured": 103
+    },
+    {
+        "date": "2020-01-29",
+        "confirmed": 7711,
+        "dead": 170,
+        "cured": 124
+    },
+    {
+        "date": "2020-01-30",
+        "confirmed": 9692,
+        "dead": 213,
+        "cured": 171
+    },
+    {
+        "date": "2020-01-31",
+        "confirmed": 11791,
+        "dead": 259,
+        "cured": 243
+    },
+    {
+        "date": "2020-02-01",
+        "confirmed": 14380,
+        "dead": 304,
+        "cured": 328
+    }
+]
