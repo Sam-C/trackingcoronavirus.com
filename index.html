@@ -17,25 +17,49 @@
     <canvas id="myChart"></canvas>
 
     <script>
-        var ctx = document.getElementById('myChart').getContext('2d');
-        var chart = new Chart(ctx, {
+        let ctx = document.getElementById("myChart").getContext("2d");
+        let chart = new Chart(ctx, {
             // The type of chart we want to create
-            type: 'line',
+            type: "line",
 
             // The data for our dataset
             data: {
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                labels: ["2020-01-20", "2020-01-21", "2020-01-22", "2020-01-23", "2020-01-24", "2020-01-25", "2020-01-26", "2020-01-27", "2020-01-28", "2020-01-29", "2020-01-30", "2020-01-31", "2020-02-01"],
                 datasets: [{
-                    label: 'My First dataset',
-                    backgroundColor: 'rgb(255, 99, 132)',
-                    borderColor: 'rgb(255, 99, 132)',
-                    data: [0, 10, 5, 2, 20, 30, 45]
+                    label: "confirmed",
+                    backgroundColor: "#f44336",
+                    borderColor: "#f44336",
+                    pointRadius: 6,
+                    pointHoverRadius: 10,
+                    showLine: false,
+                    data: [291, 440, 571, 830, 1287, 1975, 2744, 4515, 5974, 7711, 9692, 11791, 14380]
+                }, {
+                    label: "dead",
+                    backgroundColor: "#424242",
+                    borderColor: "#424242",
+                    pointRadius: 6,
+                    pointHoverRadius: 10,
+                    showLine: false,
+                    data: [6, 9, 17, 25, 41, 56, 80, 106, 132, 170, 213, 259, 304]
+                }, {
+                    label: "cured",
+                    backgroundColor: "#64dd17",
+                    borderColor: "#64dd17",
+                    pointRadius: 6,
+                    pointHoverRadius: 10,
+                    showLine: false,
+                    data: [25, 25, 25, 34, 38, 49, 51, 60, 103, 124, 171, 243, 328]
                 }]
             },
 
             // Configuration options go here
             options: {}
         });
+
+        // this.chart.getDatasetMeta(legendItem.datasetIndex).hidden = true
+        // this.chart.update()
+        // see   https://codepen.io/jordanwillis/pen/BWKKKo?editors=0010
+
     </script>
 </body>
 
