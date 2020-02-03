@@ -71,7 +71,27 @@
             },
 
             // Configuration options go here
-            options: {}
+            options: {
+                legend: {
+                    position: "right"
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Date'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Number of Person'
+                        }
+                    }]
+                },
+            }
         });
 
         // this.chart.getDatasetMeta(legendItem.datasetIndex).hidden = true
