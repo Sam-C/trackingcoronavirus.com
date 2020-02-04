@@ -21,15 +21,11 @@
 <body>
     <div class="container">
 
-        <div class="row mt-5">
+        <!-- trend chart -->
+        <div class="row">
             <div class="col-12 text-center">
-                <h1>Is Corona Spreading?</h1>
-            </div>
-        </div>
-
-        <div class="row mt-5">
-            <div class="col-12 text-center">
-                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <h2 class="mt-3">Is Corona Spreading?</h2>
+                <div class="btn-group btn-group-toggle mt-3" data-toggle="buttons">
                     <label class="btn btn-light active">
                         <input type="radio" name="mode" id="new_case" autocomplete="off"> new case
                     </label>
@@ -37,9 +33,15 @@
                         <input type="radio" name="mode" id="cumulative" autocomplete="off" checked> cumulative
                     </label>
                 </div>
-                <canvas id="corona_chart" class="px-5 mt-3"></canvas>
+                <canvas id="trend_chart" class="px-5 mt-3"></canvas>
             </div>
         </div>
+
+        <!-- death-to-recovery chart -->
+
+        <!-- region-comparison chart -->
+
+        <!-- percentage chart -->
 
     </div>
 
@@ -159,7 +161,7 @@
             },
         };
 
-        let coronaChartContext = document.getElementById("corona_chart").getContext("2d");
+        let coronaChartContext = document.getElementById("trend_chart").getContext("2d");
         let coronaChart = new Chart(coronaChartContext, { type: "line", data: cumulativeData, options: chartOptions });
 
 
