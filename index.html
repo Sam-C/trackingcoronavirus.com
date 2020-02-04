@@ -45,7 +45,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row mt-3">
             <div class="col-3">
                 <h5>Region</h5>
                 <select name="" id="" class="form-control">
@@ -116,7 +116,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row mt-3">
             <div class="col-12 d-flex justify-content-center">
                 <div>
                     <h5>Region</h5>
@@ -131,6 +131,64 @@
         </div>
 
         <!-- region-comparison chart -->
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <h2 class="mt-3">How do these regions compare?</h2>
+                <div class="btn-group btn-group-toggle mt-3" data-toggle="buttons">
+                    <label class="btn btn-light active">
+                        <input type="radio" name="mode" id="new_case3" autocomplete="off"> new case
+                    </label>
+                    <label class="btn btn-light">
+                        <input type="radio" name="mode" id="cumulative3" autocomplete="off" checked> cumulative
+                    </label>
+                </div>
+                <div>
+                    <canvas id="region_comparison_chart" class="px-5 mt-3"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-4">
+                <h5>Region 1</h5>
+                <select name="" id="" class="form-control">
+                    <option value="china">China</option>
+                    <option value="macau" selected>Macau</option>
+                    <option value="hong_kong">Hong Kong</option>
+                    <option value="taiwan">Taiwan</option>
+                </select>
+            </div>
+            <div class="col-4">
+                <h5>Region 2</h5>
+                <select name="" id="" class="form-control">
+                    <option value="china">China</option>
+                    <option value="macau">Macau</option>
+                    <option value="hong_kong" selected>Hong Kong</option>
+                    <option value="taiwan">Taiwan</option>
+                </select>
+            </div>
+            <div class="col-4">
+                <h5>Region 3</h5>
+                <select name="" id="" class="form-control">
+                    <option value="china">China</option>
+                    <option value="macau">Macau</option>
+                    <option value="hong_kong">Hong Kong</option>
+                    <option value="taiwan" selected>Taiwan</option>
+                </select>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 d-flex justify-content-center">
+                <div>
+                    <h5>Case Type</h5>
+                    <select name="" id="" class="form-control">
+                        <option value="1">comfirmed</option>
+                        <option value="2">suspected</option>
+                        <option value="3">dead</option>
+                        <option value="4">recovered</option>
+                    </select>
+                </div>
+            </div>
+        </div>
 
         <!-- percentage chart -->
 
