@@ -14,7 +14,14 @@
     <script src="https://cdn.jsdelivr.net/npm/regression@2.0.1/dist/regression.min.js"></script>
 
     <style>
-    
+        h2 {
+            font-weight: bold;
+        }
+
+        select {
+            max-width: 15rem;
+            min-width: 15rem;
+        }
     </style>
 </head>
 
@@ -33,7 +40,9 @@
                         <input type="radio" name="mode" id="cumulative" autocomplete="off" checked> cumulative
                     </label>
                 </div>
-                <canvas id="trend_chart" class="px-5 mt-3"></canvas>
+                <div>
+                    <canvas id="trend_chart" class="px-5 mt-3"></canvas>
+                </div>
             </div>
         </div>
         <div class="row">
@@ -91,6 +100,35 @@
         </div>
 
         <!-- death-to-recovery chart -->
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <h2 class="mt-3">What is the death-to-recovery ratio?</h2>
+                <div class="btn-group btn-group-toggle mt-3" data-toggle="buttons">
+                    <label class="btn btn-light active">
+                        <input type="radio" name="mode" id="new_case2" autocomplete="off"> new case
+                    </label>
+                    <label class="btn btn-light">
+                        <input type="radio" name="mode" id="cumulative2" autocomplete="off" checked> cumulative
+                    </label>
+                </div>
+                <div>
+                    <canvas id="death_to_recovery_chart" class="px-5 mt-3"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 d-flex justify-content-center">
+                <div>
+                    <h5>Region</h5>
+                    <select name="" id="" class="form-control">
+                        <option value="china">China</option>
+                        <option value="macau">Macau</option>
+                        <option value="hong_kong">Hong Kong</option>
+                        <option value="taiwan">Taiwan</option>
+                    </select>
+                </div>
+            </div>
+        </div>
 
         <!-- region-comparison chart -->
 
