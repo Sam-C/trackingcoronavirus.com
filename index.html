@@ -36,6 +36,59 @@
                 <canvas id="trend_chart" class="px-5 mt-3"></canvas>
             </div>
         </div>
+        <div class="row">
+            <div class="col-3">
+                <h5>Region</h5>
+                <select name="" id="" class="form-control">
+                    <option value="china">China</option>
+                    <option value="macau">Macau</option>
+                    <option value="hong_kong">Hong Kong</option>
+                    <option value="taiwan">Taiwan</option>
+                </select>
+            </div>
+            <div class="col-3">
+                <h5>Case Type</h5>
+                <select name="" id="" class="form-control">
+                    <option value="1">comfirmed</option>
+                    <option value="2">suspected</option>
+                    <option value="3">dead</option>
+                    <option value="4">recovered</option>
+                </select>
+            </div>
+            <div class="col-3">
+                <h5>Curve Fitting</h5>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
+                    <label class="form-check-label" for="exampleRadios1">
+                        Sigmoidal
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
+                    <label class="form-check-label" for="exampleRadios2">
+                        Exponential
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios3" value="option3">
+                    <label class="form-check-label" for="exampleRadios3">
+                        Linear
+                    </label>
+                </div>
+            </div>
+            <div class="col-3">
+                <h5>Prediction Points</h5>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <button class="btn btn-secondary" type="button" id="button-addon1">-</button>
+                    </div>
+                    <input type="text" class="form-control text-center" value="2" style="max-width: 5rem">
+                    <div class="input-group-append">
+                        <button class="btn btn-secondary" type="button" id="button-addon2">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- death-to-recovery chart -->
 
