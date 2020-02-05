@@ -136,10 +136,10 @@
                 <h2 class="mt-3">How do these regions compare?</h2>
                 <div class="btn-group btn-group-toggle mt-3" data-toggle="buttons">
                     <label class="btn btn-light active">
-                        <input type="radio" name="mode" id="new_case3" autocomplete="off"> new case
+                        <input type="radio" name="region_comparison_chart_mode" value="new_case" autocomplete="off"> new case
                     </label>
                     <label class="btn btn-light">
-                        <input type="radio" name="mode" id="cumulative3" autocomplete="off" checked> cumulative
+                        <input type="radio" name="region_comparison_chart_mode" value="cumulative" autocomplete="off" checked> cumulative
                     </label>
                 </div>
                 <div>
@@ -150,29 +150,29 @@
         <div class="row mt-3">
             <div class="col-4">
                 <h5>Region 1</h5>
-                <select name="" id="" class="form-control">
-                    <option value="china">China</option>
-                    <option value="macau" selected>Macau</option>
-                    <option value="hong_kong">Hong Kong</option>
-                    <option value="taiwan">Taiwan</option>
+                <select id="region_comparison_chart_region_1" class="form-control">
+                    <option value="China">China</option>
+                    <option value="Macau" selected>Macau</option>
+                    <option value="Hong Kong">Hong Kong</option>
+                    <option value="Taiwan">Taiwan</option>
                 </select>
             </div>
             <div class="col-4">
                 <h5>Region 2</h5>
-                <select name="" id="" class="form-control">
-                    <option value="china">China</option>
-                    <option value="macau">Macau</option>
-                    <option value="hong_kong" selected>Hong Kong</option>
-                    <option value="taiwan">Taiwan</option>
+                <select id="region_comparison_chart_region_2" class="form-control">
+                    <option value="China">China</option>
+                    <option value="Macau">Macau</option>
+                    <option value="Hong Kong" selected>Hong Kong</option>
+                    <option value="Taiwan">Taiwan</option>
                 </select>
             </div>
             <div class="col-4">
                 <h5>Region 3</h5>
-                <select name="" id="" class="form-control">
-                    <option value="china">China</option>
-                    <option value="macau">Macau</option>
-                    <option value="hong_kong">Hong Kong</option>
-                    <option value="taiwan" selected>Taiwan</option>
+                <select id="region_comparison_chart_region_3" class="form-control">
+                    <option value="China">China</option>
+                    <option value="Macau">Macau</option>
+                    <option value="Hong Kong">Hong Kong</option>
+                    <option value="Taiwan" selected>Taiwan</option>
                 </select>
             </div>
         </div>
@@ -180,11 +180,10 @@
             <div class="col-12 d-flex justify-content-center">
                 <div>
                     <h5>Case Type</h5>
-                    <select name="" id="" class="form-control">
-                        <option value="1">comfirmed</option>
-                        <option value="2">suspected</option>
-                        <option value="3">dead</option>
-                        <option value="4">recovered</option>
+                    <select id="region_comparison_chart_case_type" class="form-control">
+                        <option value="confirmed" selected>comfirmed</option>
+                        <option value="death">death</option>
+                        <option value="recovered">recovered</option>
                     </select>
                 </div>
             </div>
@@ -250,7 +249,7 @@
             
             let region = $("#death_to_recovery_chart_region").val();
             let mode = $("input[name='death_to_recovery_chart_mode']:checked").val();
-            let timeSeries = getTimeSeries(region, mode);
+            let timeSeries = getTimeSeriesForDeathToRecoveryChart(region, mode);
 
             let context = $("#death_to_recovery_chart")[0].getContext("2d");
 
@@ -310,7 +309,7 @@
             });
         }
 
-        function getTimeSeries(region, mode) {
+        function getTimeSeriesForDeathToRecoveryChart(region, mode) {
             if (mode !== "new_case" && mode !== "cumulative") {
                 throw "The mode requested is neither new_case nor cumulative.";
             }
@@ -334,8 +333,110 @@
 
         ///////////// region_comparison_chart /////////////////////////////////////
 
-        // let regionComparisonChartContext = document.getElementById("region_comparison_chart").getContext("2d");
-        // let regionComparisonChart = new Chart(regionComparisonChartContext, { type: "line", data: chartData, options: chartOptions });
+        // onload:
+        let regionComparisonChart = drawRegionComparisonChart();
+
+        // on "new case"/"cumulative" clicked:
+        $("input[name='region_comparison_chart_mode']").on("click", function() {
+            regionComparisonChart.destroy();
+            regionComparisonChart = drawRegionComparisonChart();
+        });
+
+        // on region or case type selected:
+        $("#region_comparison_chart_region_1, #region_comparison_chart_region_2, #region_comparison_chart_region_3, #region_comparison_chart_case_type").on("change", function() {
+            regionComparisonChart.destroy();
+            regionComparisonChart = drawRegionComparisonChart();
+        });
+
+
+        function drawRegionComparisonChart() {
+            
+            let region1 = $("#region_comparison_chart_region_1").val();
+            let region2 = $("#region_comparison_chart_region_2").val();
+            let region3 = $("#region_comparison_chart_region_3").val();
+            let caseType = $("#region_comparison_chart_case_type").val();
+            let mode = $("input[name='region_comparison_chart_mode']:checked").val();
+            let timeSeries = getTimeSeriesForRegionComparisonChart(region1, region2, region3, caseType, mode);
+
+            let context = $("#region_comparison_chart")[0].getContext("2d");
+
+            return new Chart(context, { 
+                type: "line", 
+                data: {
+                    labels: timeSeries.time,
+                    datasets: [{
+                        label: region1,
+                        backgroundColor: "#11617a",
+                        borderColor: "#11617a",
+                        fill: false,
+                        cubicInterpolationMode: "monotone",
+                        data: timeSeries.region1
+                    }, {
+                        label: region2,
+                        backgroundColor: "#09baa0",
+                        borderColor: "#09baa0",
+                        fill: false,
+                        cubicInterpolationMode: "monotone",
+                        data: timeSeries.region2
+                    }, {
+                        label: region3,
+                        backgroundColor: "#ffb45e",
+                        borderColor: "#ffb45e",
+                        fill: false,
+                        cubicInterpolationMode: "monotone",
+                        data: timeSeries.region3
+                    }]
+                }, 
+                options: {
+                    legend: {
+                        position: "right"
+                    },
+                    scales: {
+                        xAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Date'
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                min: 0
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Number of Person'
+                            }
+                        }]
+                    },
+                }
+            });
+        }
+
+        function getTimeSeriesForRegionComparisonChart(region1, region2, region3, caseType, mode) {
+            if (mode !== "new_case" && mode !== "cumulative") {
+                throw "The mode requested is neither new_case nor cumulative.";
+            }
+
+            if (caseType !== "confirmed" && caseType !== "recovered" &&  caseType !== "death") {
+                throw "The caseType requested is neither confirmed, recovered nor death.";
+            }
+
+            let timeSeries = {};
+            timeSeries.time = data.time;
+            timeSeries.region1 = data.case.find(x => x.region === region1)[caseType];
+            timeSeries.region2 = data.case.find(x => x.region === region2)[caseType];
+            timeSeries.region3 = data.case.find(x => x.region === region3)[caseType];
+            // TODO: what if the region / case type is not found?
+
+            if (mode === "new_case") {
+                timeSeries.time = timeSeries.time.slice(1);  // remove first value
+                timeSeries.region1 = delta(timeSeries.region1);
+                timeSeries.region2 = delta(timeSeries.region2);
+                timeSeries.region3 = delta(timeSeries.region3);
+            }
+
+            return timeSeries;
+        }
 
         ///////////// percentage_chart /////////////////////////////////////
 
