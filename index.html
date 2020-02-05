@@ -105,10 +105,10 @@
                 <h2 class="mt-3">What is the death-to-recovery ratio?</h2>
                 <div class="btn-group btn-group-toggle mt-3" data-toggle="buttons">
                     <label class="btn btn-light active">
-                        <input type="radio" name="mode" id="new_case2" autocomplete="off"> new case
+                        <input type="radio" name="death_to_recovery_chart_mode" value="new_case" autocomplete="off"> new case
                     </label>
                     <label class="btn btn-light">
-                        <input type="radio" name="mode" id="cumulative2" autocomplete="off" checked> cumulative
+                        <input type="radio" name="death_to_recovery_chart_mode" value="cumulative" autocomplete="off" checked> cumulative
                     </label>
                 </div>
                 <div>
@@ -120,11 +120,11 @@
             <div class="col-12 d-flex justify-content-center">
                 <div>
                     <h5>Region</h5>
-                    <select name="" id="" class="form-control">
-                        <option value="china">China</option>
-                        <option value="macau">Macau</option>
-                        <option value="hong_kong">Hong Kong</option>
-                        <option value="taiwan">Taiwan</option>
+                    <select name="" id="death_to_recovery_chart_region" class="form-control">
+                        <option value="China">China</option>
+                        <option value="Macau">Macau</option>
+                        <option value="Hong Kong">Hong Kong</option>
+                        <option value="Taiwan" selected>Taiwan</option>
                     </select>
                 </div>
             </div>
@@ -230,62 +230,127 @@
 
         ///////////// death_to_recovery_chart /////////////////////////////////////
 
-        let deathToRecoveryChartContext = document.getElementById("death_to_recovery_chart").getContext("2d");
+        /*
+        onload:
+        onclick "new case"/"cumulative":
+        onselect "Taiwan":
+            new [current type][current location] chart ()
+        
+        new [current type][current location] chart ():                          drawDeathToRecoveryChart()
+            type: line
+            data: setup [current type][current location] data()
+            options: options
 
-        let data2 = {
-            labels: data.time,
-            datasets: [{
-                label: "confirmed",
-                backgroundColor: "#f44336",
-                borderColor: "#f44336",
-                pointRadius: 6,
-                pointHoverRadius: 10,
-                showLine: false,
-                data: data.case.find(x => x.region === "Taiwan").confirmed,
-                hidden: true
-            }, {
-                label: "recovered",
-                backgroundColor: "#64dd17",
-                borderColor: "#64dd17",
-                pointRadius: 6,
-                pointHoverRadius: 10,
-                showLine: false,
-                data: data.case.find(x => x.region === "Taiwan").recovered
-            }, {
-                label: "death",
-                backgroundColor: "#424242",
-                borderColor: "#424242",
-                pointRadius: 6,
-                pointHoverRadius: 10,
-                showLine: false,
-                data: data.case.find(x => x.region === "Taiwan").death
-            }]
-        };
+        setup [current type][current location] data():                          drawDeathToRecoveryChart()
+            labels: data.time
+            datasets[0].borderColor = "#f44336"
+            datasets[0].data = [current type][current location] time series
 
-        let options2 = {
-            legend: {
-                position: "right"
-            },
-            scales: {
-                xAxes: [{
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Date'
-                    }
-                }],
-                yAxes: [{
-                    ticks: {
-                        min: 0
+        get [current type][current location] time series:                       getTimeSeries()
+            delta...
+        */
+
+        // onload:
+        let deathToRecoveryChart = drawDeathToRecoveryChart();
+
+        // on "new case"/"cumulative" clicked:
+        $("input[name='death_to_recovery_chart_mode']").on("click", function() {
+            deathToRecoveryChart.destroy();
+            deathToRecoveryChart = drawDeathToRecoveryChart();
+        });
+
+        // on region selected:
+        $("#death_to_recovery_chart_region").on("change", function() {
+            deathToRecoveryChart.destroy();
+            deathToRecoveryChart = drawDeathToRecoveryChart();
+        });
+
+
+        function drawDeathToRecoveryChart() {
+            
+            let region = $("#death_to_recovery_chart_region").val();
+            let mode = $("input[name='death_to_recovery_chart_mode']:checked").val();
+            let timeSeries = getTimeSeries(region, mode);
+
+            let context = $("#death_to_recovery_chart")[0].getContext("2d");
+
+            return new Chart(context, { 
+                type: "line", 
+                data: {
+                    labels: timeSeries.time,
+                    datasets: [{
+                        label: "confirmed",
+                        backgroundColor: "#f44336",
+                        borderColor: "#f44336",
+                        pointRadius: 6,
+                        pointHoverRadius: 10,
+                        showLine: false,
+                        data: timeSeries.confirmed,
+                        // hidden: true
+                    }, {
+                        label: "recovered",
+                        backgroundColor: "#64dd17",
+                        borderColor: "#64dd17",
+                        pointRadius: 6,
+                        pointHoverRadius: 10,
+                        showLine: false,
+                        data: timeSeries.recovered
+                    }, {
+                        label: "death",
+                        backgroundColor: "#424242",
+                        borderColor: "#424242",
+                        pointRadius: 6,
+                        pointHoverRadius: 10,
+                        showLine: false,
+                        data: timeSeries.death
+                    }]
+                }, 
+                options: {
+                    legend: {
+                        position: "right"
                     },
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Number of Person'
-                    }
-                }]
-            },
-        };
+                    scales: {
+                        xAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Date'
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                min: 0
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Number of Person'
+                            }
+                        }]
+                    },
+                }
+            });
+        }
 
-        let deathToRecoveryChart = new Chart(deathToRecoveryChartContext, { type: "line", data: data2, options: options2 });
+        function getTimeSeries(region, mode) {
+            if (mode !== "new_case" && mode !== "cumulative") {
+                throw "The mode requested is neither new_case nor cumulative.";
+            }
+
+            let timeSeries = {};
+            timeSeries.time = data.time;
+            timeSeries.confirmed = data.case.find(x => x.region === region).confirmed;
+            timeSeries.recovered = data.case.find(x => x.region === region).recovered;
+            timeSeries.death = data.case.find(x => x.region === region).death;
+            // TODO: what if the region / case type is not found?
+
+            if (mode === "new_case") {
+                timeSeries.time = timeSeries.time.slice(1);  // remove first value
+                timeSeries.confirmed = delta(timeSeries.confirmed);
+                timeSeries.recovered = delta(timeSeries.recovered);
+                timeSeries.death = delta(timeSeries.death);
+            }
+
+            return timeSeries;
+        }
 
         ///////////// region_comparison_chart /////////////////////////////////////
 
@@ -298,128 +363,6 @@
         // let percentageChart = new Chart(percentageChartContext, { type: "line", data: chartData, options: chartOptions });
 
 
-
-        // let china = {
-        //     dates: ["2020-01-20", "2020-01-21", "2020-01-22", "2020-01-23", "2020-01-24", "2020-01-25", "2020-01-26", "2020-01-27", "2020-01-28", "2020-01-29", "2020-01-30", "2020-01-31", "2020-02-01"],
-        //     confirmed: [291, 440, 571, 830, 1287, 1975, 2744, 4515, 5974, 7711, 9692, 11791, 14380],
-        //     dead: [6, 9, 17, 25, 41, 56, 80, 106, 132, 170, 213, 259, 304],
-        //     recovered: [25, 25, 25, 34, 38, 49, 51, 60, 103, 124, 171, 243, 328]
-        // };
-
-        // let input = china.confirmed.map( (value, index) => [index, value]);  //make an array of [x,y] pairs
-        // const output = regression.exponential(input);
-        // let exponentialFit = output.points.map(pair => pair[1]);
-
-        // china.dates.push("2020-02-02");
-        // exponentialFit.push(output.predict(output.points.length)[1]);  // add 1 prediction point
-        // china.dates.push("2020-02-03");
-        // exponentialFit.push(output.predict(output.points.length + 1)[1]);  // add 1 more prediction point
-
-        // let cumulativeData = {
-        //     labels: data.time,
-        //     datasets: [{
-        //         label: "confirmed",
-        //         backgroundColor: "#f44336",
-        //         borderColor: "#f44336",
-        //         pointRadius: 6,
-        //         pointHoverRadius: 10,
-        //         showLine: false,
-        //         data: china.confirmed
-        //     }, {
-        //         label: "dead",
-        //         backgroundColor: "#424242",
-        //         borderColor: "#424242",
-        //         pointRadius: 6,
-        //         pointHoverRadius: 10,
-        //         showLine: false,
-        //         data: china.dead,
-        //         hidden: true  // set to null to show
-        //     }, {
-        //         label: "recovered",
-        //         backgroundColor: "#64dd17",
-        //         borderColor: "#64dd17",
-        //         pointRadius: 6,
-        //         pointHoverRadius: 10,
-        //         showLine: false,
-        //         data: china.recovered,
-        //         hidden: true  // set to null to show
-        //     }, {
-        //         label: "exponential",
-        //         borderColor: "#888888",
-        //         pointRadius: 0,
-        //         borderDash: [5,5],
-        //         fill: false,
-        //         data: exponentialFit
-        //     }]
-        // };
-
-        // let newCaseData = {
-        //     labels: china.dates.slice(1), //remove first date
-        //     datasets: [{
-        //         label: "confirmed",
-        //         backgroundColor: "#f44336",
-        //         borderColor: "#f44336",
-        //         pointRadius: 6,
-        //         pointHoverRadius: 10,
-        //         showLine: false,
-        //         data: delta(china.confirmed)
-        //     }, {
-        //         label: "dead",
-        //         backgroundColor: "#424242",
-        //         borderColor: "#424242",
-        //         pointRadius: 6,
-        //         pointHoverRadius: 10,
-        //         showLine: false,
-        //         data: delta(china.dead),
-        //         hidden: true  // set to null to show
-        //     }, {
-        //         label: "recovered",
-        //         backgroundColor: "#64dd17",
-        //         borderColor: "#64dd17",
-        //         pointRadius: 6,
-        //         pointHoverRadius: 10,
-        //         showLine: false,
-        //         data: delta(china.recovered),
-        //         hidden: true  // set to null to show
-        //     }]
-        // }
-
-        // let chartOptions = {
-        //     legend: {
-        //         position: "right"
-        //     },
-        //     scales: {
-        //         xAxes: [{
-        //             display: true,
-        //             scaleLabel: {
-        //                 display: true,
-        //                 labelString: 'Date'
-        //             }
-        //         }],
-        //         yAxes: [{
-        //             display: true,
-        //             scaleLabel: {
-        //                 display: true,
-        //                 labelString: 'Number of Person'
-        //             }
-        //         }]
-        //     },
-        // };
-
-        // let coronaChartContext = document.getElementById("trend_chart").getContext("2d");
-        // let coronaChart = new Chart(coronaChartContext, { type: "line", data: cumulativeData, options: chartOptions });
-
-
-
-        // $("#new_case").on("click", function() {
-        //     coronaChart.destroy();
-        //     coronaChart = new Chart(coronaChartContext, { type: "line", data: newCaseData, options: chartOptions });
-        // })
-
-        // $("#cumulative").on("click", function () {
-        //     coronaChart.destroy();
-        //     coronaChart = new Chart(coronaChartContext, { type: "line", data: cumulativeData, options: chartOptions });
-        // })
 
         // this.chart.getDatasetMeta(legendItem.datasetIndex).hidden = true
         // this.chart.update()
