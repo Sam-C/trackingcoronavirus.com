@@ -210,7 +210,10 @@
 
     </div>
 
+    <script src="data.js"></script>
     <script>
+        ///////////// helper functions /////////////////////////////////////
+        
         function delta(array) {
             let result = [];
             for (let i = 0; i < array.length - 1; i++) {
@@ -219,24 +222,18 @@
             return result;
         }
 
-        let china = {
-            dates: ["2020-01-20", "2020-01-21", "2020-01-22", "2020-01-23", "2020-01-24", "2020-01-25", "2020-01-26", "2020-01-27", "2020-01-28", "2020-01-29", "2020-01-30", "2020-01-31", "2020-02-01"],
-            confirmed: [291, 440, 571, 830, 1287, 1975, 2744, 4515, 5974, 7711, 9692, 11791, 14380],
-            dead: [6, 9, 17, 25, 41, 56, 80, 106, 132, 170, 213, 259, 304],
-            recovered: [25, 25, 25, 34, 38, 49, 51, 60, 103, 124, 171, 243, 328]
-        };
+        ///////////// trend_chart /////////////////////////////////////
 
-        let input = china.confirmed.map( (value, index) => [index, value]);  //make an array of [x,y] pairs
-        const output = regression.exponential(input);
-        let exponentialFit = output.points.map(pair => pair[1]);
+        // let trendChartContext = document.getElementById("trend_chart").getContext("2d");
+        // let trendChart = new Chart(trendChartContext, { type: "line", data: chartData, options: chartOptions });
+        
 
-        china.dates.push("2020-02-02");
-        exponentialFit.push(output.predict(output.points.length)[1]);  // add 1 prediction point
-        china.dates.push("2020-02-03");
-        exponentialFit.push(output.predict(output.points.length + 1)[1]);  // add 1 more prediction point
+        ///////////// death_to_recovery_chart /////////////////////////////////////
 
-        let cumulativeData = {
-            labels: china.dates,
+        let deathToRecoveryChartContext = document.getElementById("death_to_recovery_chart").getContext("2d");
+
+        let data2 = {
+            labels: data.time,
             datasets: [{
                 label: "confirmed",
                 backgroundColor: "#f44336",
@@ -244,16 +241,8 @@
                 pointRadius: 6,
                 pointHoverRadius: 10,
                 showLine: false,
-                data: china.confirmed
-            }, {
-                label: "dead",
-                backgroundColor: "#424242",
-                borderColor: "#424242",
-                pointRadius: 6,
-                pointHoverRadius: 10,
-                showLine: false,
-                data: china.dead,
-                hidden: true  // set to null to show
+                data: data.case.find(x => x.region === "Taiwan").confirmed,
+                hidden: true
             }, {
                 label: "recovered",
                 backgroundColor: "#64dd17",
@@ -261,63 +250,33 @@
                 pointRadius: 6,
                 pointHoverRadius: 10,
                 showLine: false,
-                data: china.recovered,
-                hidden: true  // set to null to show
+                data: data.case.find(x => x.region === "Taiwan").recovered
             }, {
-                label: "exponential",
-                borderColor: "#888888",
-                pointRadius: 0,
-                borderDash: [5,5],
-                fill: false,
-                data: exponentialFit
+                label: "death",
+                backgroundColor: "#424242",
+                borderColor: "#424242",
+                pointRadius: 6,
+                pointHoverRadius: 10,
+                showLine: false,
+                data: data.case.find(x => x.region === "Taiwan").death
             }]
         };
 
-        let newCaseData = {
-            labels: china.dates.slice(1), //remove first date
-            datasets: [{
-                label: "confirmed",
-                backgroundColor: "#f44336",
-                borderColor: "#f44336",
-                pointRadius: 6,
-                pointHoverRadius: 10,
-                showLine: false,
-                data: delta(china.confirmed)
-            }, {
-                label: "dead",
-                backgroundColor: "#424242",
-                borderColor: "#424242",
-                pointRadius: 6,
-                pointHoverRadius: 10,
-                showLine: false,
-                data: delta(china.dead),
-                hidden: true  // set to null to show
-            }, {
-                label: "recovered",
-                backgroundColor: "#64dd17",
-                borderColor: "#64dd17",
-                pointRadius: 6,
-                pointHoverRadius: 10,
-                showLine: false,
-                data: delta(china.recovered),
-                hidden: true  // set to null to show
-            }]
-        }
-
-        let chartOptions = {
+        let options2 = {
             legend: {
                 position: "right"
             },
             scales: {
                 xAxes: [{
-                    display: true,
                     scaleLabel: {
                         display: true,
                         labelString: 'Date'
                     }
                 }],
                 yAxes: [{
-                    display: true,
+                    ticks: {
+                        min: 0
+                    },
                     scaleLabel: {
                         display: true,
                         labelString: 'Number of Person'
@@ -326,20 +285,141 @@
             },
         };
 
-        let coronaChartContext = document.getElementById("trend_chart").getContext("2d");
-        let coronaChart = new Chart(coronaChartContext, { type: "line", data: cumulativeData, options: chartOptions });
+        let deathToRecoveryChart = new Chart(deathToRecoveryChartContext, { type: "line", data: data2, options: options2 });
+
+        ///////////// region_comparison_chart /////////////////////////////////////
+
+        // let regionComparisonChartContext = document.getElementById("region_comparison_chart").getContext("2d");
+        // let regionComparisonChart = new Chart(regionComparisonChartContext, { type: "line", data: chartData, options: chartOptions });
+
+        ///////////// percentage_chart /////////////////////////////////////
+
+        // let percentageChartContext = document.getElementById("percentage_chart").getContext("2d");
+        // let percentageChart = new Chart(percentageChartContext, { type: "line", data: chartData, options: chartOptions });
 
 
 
-        $("#new_case").on("click", function() {
-            coronaChart.destroy();
-            coronaChart = new Chart(coronaChartContext, { type: "line", data: newCaseData, options: chartOptions });
-        })
+        // let china = {
+        //     dates: ["2020-01-20", "2020-01-21", "2020-01-22", "2020-01-23", "2020-01-24", "2020-01-25", "2020-01-26", "2020-01-27", "2020-01-28", "2020-01-29", "2020-01-30", "2020-01-31", "2020-02-01"],
+        //     confirmed: [291, 440, 571, 830, 1287, 1975, 2744, 4515, 5974, 7711, 9692, 11791, 14380],
+        //     dead: [6, 9, 17, 25, 41, 56, 80, 106, 132, 170, 213, 259, 304],
+        //     recovered: [25, 25, 25, 34, 38, 49, 51, 60, 103, 124, 171, 243, 328]
+        // };
 
-        $("#cumulative").on("click", function () {
-            coronaChart.destroy();
-            coronaChart = new Chart(coronaChartContext, { type: "line", data: cumulativeData, options: chartOptions });
-        })
+        // let input = china.confirmed.map( (value, index) => [index, value]);  //make an array of [x,y] pairs
+        // const output = regression.exponential(input);
+        // let exponentialFit = output.points.map(pair => pair[1]);
+
+        // china.dates.push("2020-02-02");
+        // exponentialFit.push(output.predict(output.points.length)[1]);  // add 1 prediction point
+        // china.dates.push("2020-02-03");
+        // exponentialFit.push(output.predict(output.points.length + 1)[1]);  // add 1 more prediction point
+
+        // let cumulativeData = {
+        //     labels: data.time,
+        //     datasets: [{
+        //         label: "confirmed",
+        //         backgroundColor: "#f44336",
+        //         borderColor: "#f44336",
+        //         pointRadius: 6,
+        //         pointHoverRadius: 10,
+        //         showLine: false,
+        //         data: china.confirmed
+        //     }, {
+        //         label: "dead",
+        //         backgroundColor: "#424242",
+        //         borderColor: "#424242",
+        //         pointRadius: 6,
+        //         pointHoverRadius: 10,
+        //         showLine: false,
+        //         data: china.dead,
+        //         hidden: true  // set to null to show
+        //     }, {
+        //         label: "recovered",
+        //         backgroundColor: "#64dd17",
+        //         borderColor: "#64dd17",
+        //         pointRadius: 6,
+        //         pointHoverRadius: 10,
+        //         showLine: false,
+        //         data: china.recovered,
+        //         hidden: true  // set to null to show
+        //     }, {
+        //         label: "exponential",
+        //         borderColor: "#888888",
+        //         pointRadius: 0,
+        //         borderDash: [5,5],
+        //         fill: false,
+        //         data: exponentialFit
+        //     }]
+        // };
+
+        // let newCaseData = {
+        //     labels: china.dates.slice(1), //remove first date
+        //     datasets: [{
+        //         label: "confirmed",
+        //         backgroundColor: "#f44336",
+        //         borderColor: "#f44336",
+        //         pointRadius: 6,
+        //         pointHoverRadius: 10,
+        //         showLine: false,
+        //         data: delta(china.confirmed)
+        //     }, {
+        //         label: "dead",
+        //         backgroundColor: "#424242",
+        //         borderColor: "#424242",
+        //         pointRadius: 6,
+        //         pointHoverRadius: 10,
+        //         showLine: false,
+        //         data: delta(china.dead),
+        //         hidden: true  // set to null to show
+        //     }, {
+        //         label: "recovered",
+        //         backgroundColor: "#64dd17",
+        //         borderColor: "#64dd17",
+        //         pointRadius: 6,
+        //         pointHoverRadius: 10,
+        //         showLine: false,
+        //         data: delta(china.recovered),
+        //         hidden: true  // set to null to show
+        //     }]
+        // }
+
+        // let chartOptions = {
+        //     legend: {
+        //         position: "right"
+        //     },
+        //     scales: {
+        //         xAxes: [{
+        //             display: true,
+        //             scaleLabel: {
+        //                 display: true,
+        //                 labelString: 'Date'
+        //             }
+        //         }],
+        //         yAxes: [{
+        //             display: true,
+        //             scaleLabel: {
+        //                 display: true,
+        //                 labelString: 'Number of Person'
+        //             }
+        //         }]
+        //     },
+        // };
+
+        // let coronaChartContext = document.getElementById("trend_chart").getContext("2d");
+        // let coronaChart = new Chart(coronaChartContext, { type: "line", data: cumulativeData, options: chartOptions });
+
+
+
+        // $("#new_case").on("click", function() {
+        //     coronaChart.destroy();
+        //     coronaChart = new Chart(coronaChartContext, { type: "line", data: newCaseData, options: chartOptions });
+        // })
+
+        // $("#cumulative").on("click", function () {
+        //     coronaChart.destroy();
+        //     coronaChart = new Chart(coronaChartContext, { type: "line", data: cumulativeData, options: chartOptions });
+        // })
 
         // this.chart.getDatasetMeta(legendItem.datasetIndex).hidden = true
         // this.chart.update()
