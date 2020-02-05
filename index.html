@@ -230,26 +230,6 @@
 
         ///////////// death_to_recovery_chart /////////////////////////////////////
 
-        /*
-        onload:
-        onclick "new case"/"cumulative":
-        onselect "Taiwan":
-            new [current type][current location] chart ()
-        
-        new [current type][current location] chart ():                          drawDeathToRecoveryChart()
-            type: line
-            data: setup [current type][current location] data()
-            options: options
-
-        setup [current type][current location] data():                          drawDeathToRecoveryChart()
-            labels: data.time
-            datasets[0].borderColor = "#f44336"
-            datasets[0].data = [current type][current location] time series
-
-        get [current type][current location] time series:                       getTimeSeries()
-            delta...
-        */
-
         // onload:
         let deathToRecoveryChart = drawDeathToRecoveryChart();
 
