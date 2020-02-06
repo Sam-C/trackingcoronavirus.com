@@ -356,30 +356,27 @@
                 data: {
                     labels: timeSeries.time,
                     datasets: [{
-                        label: "confirmed",
-                        backgroundColor: "#f44336",
-                        borderColor: "#f44336",
-                        pointRadius: 6,
-                        pointHoverRadius: 10,
-                        showLine: false,
-                        data: timeSeries.confirmed,
-                        // hidden: true
-                    }, {
                         label: "recovered",
                         backgroundColor: "#64dd17",
                         borderColor: "#64dd17",
-                        pointRadius: 6,
-                        pointHoverRadius: 10,
-                        showLine: false,
+                        fill: false,
+                        cubicInterpolationMode: "monotone",
                         data: timeSeries.recovered
                     }, {
                         label: "death",
                         backgroundColor: "#424242",
                         borderColor: "#424242",
-                        pointRadius: 6,
-                        pointHoverRadius: 10,
-                        showLine: false,
+                        fill: false,
+                        cubicInterpolationMode: "monotone",
                         data: timeSeries.death
+                    }, {
+                        label: "confirmed",
+                        backgroundColor: "#f44336",
+                        borderColor: "#f44336",
+                        fill: false,
+                        cubicInterpolationMode: "monotone",
+                        data: timeSeries.confirmed,
+                        hidden: true
                     }]
                 }, 
                 options: {
