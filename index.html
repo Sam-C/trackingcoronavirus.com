@@ -22,6 +22,17 @@
             max-width: 15rem;
             min-width: 15rem;
         }
+
+        input[type="number"] {
+            -webkit-appearance: textfield;
+               -moz-appearance: textfield;
+                    appearance: textfield;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { 
+            -webkit-appearance: none;
+        }
     </style>
 </head>
 
@@ -34,10 +45,10 @@
                 <h2 class="mt-3">Is Corona Spreading?</h2>
                 <div class="btn-group btn-group-toggle mt-3" data-toggle="buttons">
                     <label class="btn btn-light active">
-                        <input type="radio" name="mode" id="new_case" autocomplete="off"> new case
+                        <input type="radio" name="trend_chart_mode" value="new_case" autocomplete="off"> new case
                     </label>
                     <label class="btn btn-light">
-                        <input type="radio" name="mode" id="cumulative" autocomplete="off" checked> cumulative
+                        <input type="radio" name="trend_chart_mode" value="cumulative" autocomplete="off" checked> cumulative
                     </label>
                 </div>
                 <div>
@@ -48,40 +59,39 @@
         <div class="row mt-3">
             <div class="col-3">
                 <h5>Region</h5>
-                <select name="" id="" class="form-control">
-                    <option value="china">China</option>
-                    <option value="macau">Macau</option>
-                    <option value="hong_kong">Hong Kong</option>
-                    <option value="taiwan">Taiwan</option>
+                <select id="trend_chart_region" class="form-control">
+                    <option value="China (Mainland)">China (Mainland)</option>
+                    <option value="Macau">Macau</option>
+                    <option value="Hong Kong">Hong Kong</option>
+                    <option value="Taiwan">Taiwan</option>
                 </select>
             </div>
             <div class="col-3">
                 <h5>Case Type</h5>
-                <select name="" id="" class="form-control">
-                    <option value="1">comfirmed</option>
-                    <option value="2">suspected</option>
-                    <option value="3">dead</option>
-                    <option value="4">recovered</option>
+                <select id="trend_chart_case_type" class="form-control">
+                    <option value="confirmed">confirmed</option>
+                    <option value="death">death</option>
+                    <option value="recovered">recovered</option>
                 </select>
             </div>
             <div class="col-3">
                 <h5>Curve Fitting</h5>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
-                    <label class="form-check-label" for="exampleRadios1">
-                        Sigmoidal
+                    <input class="form-check-input" type="radio" name="trend_chart_curve_fitting" id="sigmoidal" value="sigmoidal">
+                    <label class="form-check-label" for="sigmoidal">
+                        sigmoidal
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
-                    <label class="form-check-label" for="exampleRadios2">
-                        Exponential
+                    <input class="form-check-input" type="radio" name="trend_chart_curve_fitting" id="exponential" value="exponential" checked>
+                    <label class="form-check-label" for="exponential">
+                        exponential
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios3" value="option3">
-                    <label class="form-check-label" for="exampleRadios3">
-                        Linear
+                    <input class="form-check-input" type="radio" name="trend_chart_curve_fitting" id="linear" value="linear">
+                    <label class="form-check-label" for="linear">
+                        linear
                     </label>
                 </div>
             </div>
@@ -89,11 +99,17 @@
                 <h5>Prediction Points</h5>
                 <div class="input-group">
                     <div class="input-group-prepend">
-                        <button class="btn btn-secondary" type="button" id="button-addon1">-</button>
+                        <button class="btn btn-secondary" type="button" id="button-addon1" onclick="
+                            trend_chart_prediction_point.stepDown();
+                            trend_chart_prediction_point.dispatchEvent(new Event('change'));
+                        "><b>−</b></button>
                     </div>
-                    <input type="text" class="form-control text-center" value="2" style="max-width: 5rem">
+                    <input type="number" class="form-control text-center" min="0" value="2" style="max-width: 5rem" id="trend_chart_prediction_point">
                     <div class="input-group-append">
-                        <button class="btn btn-secondary" type="button" id="button-addon2">+</button>
+                        <button class="btn btn-secondary" type="button" id="button-addon2" onclick="
+                            trend_chart_prediction_point.stepUp();
+                            trend_chart_prediction_point.dispatchEvent(new Event('change'));
+                        "><b>+</b></button>
                     </div>
                 </div>
             </div>
@@ -121,7 +137,7 @@
                 <div>
                     <h5>Region</h5>
                     <select name="" id="death_to_recovery_chart_region" class="form-control">
-                        <option value="China">China</option>
+                        <option value="China (Mainland)">China (Mainland)</option>
                         <option value="Macau">Macau</option>
                         <option value="Hong Kong">Hong Kong</option>
                         <option value="Taiwan" selected>Taiwan</option>
@@ -223,9 +239,103 @@
 
         ///////////// trend_chart /////////////////////////////////////
 
-        // let trendChartContext = document.getElementById("trend_chart").getContext("2d");
-        // let trendChart = new Chart(trendChartContext, { type: "line", data: chartData, options: chartOptions });
+        // onload:
+        let trendChart = drawTrendChart();
+
+        // on "new case"/"cumulative" clicked:
+        $("input[name='trend_chart_mode']").on("click", function() {
+            trendChart.destroy();
+            trendChart = drawTrendChart();
+        });
+
+        // on region or case type selected:
+        $("#trend_chart_region, #trend_chart_case_type, input[name='trend_chart_curve_fitting'], #trend_chart_prediction_point").on("change", function() {
+            trendChart.destroy();
+            trendChart = drawTrendChart();
+        });
+
         
+        function drawTrendChart() {
+            
+            let region = $("#trend_chart_region").val();
+            let caseType = $("#trend_chart_case_type").val();
+            let curveFitting = $("input[name='trend_chart_curve_fitting']:checked").val();
+            let predictionPoint = $("#trend_chart_prediction_point").val();
+            let mode = $("input[name='trend_chart_mode']:checked").val();
+            let timeSeries = getTimeSeriesForTrendChart(region, caseType, curveFitting, predictionPoint, mode);
+
+            let context = $("#trend_chart")[0].getContext("2d");
+
+            return new Chart(context, { 
+                type: "line", 
+                data: {
+                    labels: timeSeries.time,
+                    datasets: [{
+                        label: region,
+                        backgroundColor: "#f44336",
+                        borderColor: "#f44336",
+                        pointRadius: 6,
+                        pointHoverRadius: 10,
+                        showLine: false,
+                        data: timeSeries.region
+                    }, {
+                        label: curveFitting,
+                        borderColor: "#888888",
+                        pointRadius: 0,
+                        borderDash: [5,5],
+                        fill: false,
+                        data: timeSeries.curve
+                    }]
+                }, 
+                options: {
+                    legend: {position: "right"},
+                    scales: {
+                        xAxes: [{
+                            scaleLabel: {display: true, labelString: "Date"}
+                        }],
+                        yAxes: [{
+                            ticks: {min: 0},
+                            scaleLabel: {display: true, labelString: "Number of Person"}
+                        }]
+                    },
+                    animation: {duration: 0}
+                }
+            });
+        }
+
+        function getTimeSeriesForTrendChart(region, caseType, curveFitting, predictionPoint, mode) {
+            if (mode !== "new_case" && mode !== "cumulative") {
+                throw "The mode requested is neither new_case nor cumulative.";
+            }
+
+            if (caseType !== "confirmed" && caseType !== "recovered" && caseType !== "death") {
+                throw "The caseType requested is neither confirmed, recovered nor death.";
+            }
+
+            let timeSeries = {};
+            timeSeries.time = data.time.slice();
+            timeSeries.region = data.case.find(x => x.region === region)[caseType].slice();
+            // TODO: what if the region / case type is not found?
+
+            if (mode === "new_case") {
+                timeSeries.time = timeSeries.time.slice(1);  // remove first value
+                timeSeries.region = delta(timeSeries.region);
+            }
+
+            // curveFitting
+            let input = timeSeries.region.map((value, index) => [index, value]);  //make an array of [x,y] pairs
+            // const output = regression.exponential(input);
+            let output = regression[curveFitting](input);
+            timeSeries.curve = output.points.map(pair => pair[1]);
+
+            //predictionPoints
+            for (let i = 0; i < predictionPoint; i++) {
+                timeSeries.time.push(`+ ${i+1}`);
+                timeSeries.curve.push( output.predict(output.points.length + i)[1] );
+            }
+
+            return timeSeries;
+        }
 
         ///////////// death_to_recovery_chart /////////////////////////////////////
 
