@@ -400,10 +400,10 @@
             }
 
             let timeSeries = {};
-            timeSeries.time = data.time;
-            timeSeries.confirmed = data.case.find(x => x.region === region).confirmed;
-            timeSeries.recovered = data.case.find(x => x.region === region).recovered;
-            timeSeries.death = data.case.find(x => x.region === region).death;
+            timeSeries.time = data.time.slice();
+            timeSeries.confirmed = data.case.find(x => x.region === region).confirmed.slice();
+            timeSeries.recovered = data.case.find(x => x.region === region).recovered.slice();
+            timeSeries.death = data.case.find(x => x.region === region).death.slice();
             // TODO: what if the region / case type is not found?
 
             if (mode === "new_case") {
@@ -497,10 +497,10 @@
             }
 
             let timeSeries = {};
-            timeSeries.time = data.time;
-            timeSeries.region1 = data.case.find(x => x.region === region1)[caseType];
-            timeSeries.region2 = data.case.find(x => x.region === region2)[caseType];
-            timeSeries.region3 = data.case.find(x => x.region === region3)[caseType];
+            timeSeries.time = data.time.slice();
+            timeSeries.region1 = data.case.find(x => x.region === region1)[caseType].slice();
+            timeSeries.region2 = data.case.find(x => x.region === region2)[caseType].slice();
+            timeSeries.region3 = data.case.find(x => x.region === region3)[caseType].slice();
             // TODO: what if the region / case type is not found?
 
             if (mode === "new_case") {
@@ -577,9 +577,9 @@
             }
 
             let timeSeries = {};
-            timeSeries.time = data.time;
-            timeSeries.china = data.case.find(x => x.region === "China (Mainland)").confirmed;
-            timeSeries.world = data.case.find(x => x.region === "World").confirmed;
+            timeSeries.time = data.time.slice();
+            timeSeries.china = data.case.find(x => x.region === "China (Mainland)").confirmed.slice();
+            timeSeries.world = data.case.find(x => x.region === "World").confirmed.slice();
             // TODO: what if the region / case type is not found?
 
             if (mode === "new_case") {
