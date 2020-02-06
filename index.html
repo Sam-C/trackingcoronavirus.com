@@ -195,10 +195,10 @@
                 <h2 class="mt-3">How many of them are from China?</h2>
                 <div class="btn-group btn-group-toggle mt-3" data-toggle="buttons">
                     <label class="btn btn-light active">
-                        <input type="radio" name="mode" id="new_case4" autocomplete="off"> new case
+                        <input type="radio" name="percentage_chart_mode" value="new_case" autocomplete="off"> new case
                     </label>
                     <label class="btn btn-light">
-                        <input type="radio" name="mode" id="cumulative4" autocomplete="off" checked> cumulative
+                        <input type="radio" name="percentage_chart_mode" value="cumulative" autocomplete="off" checked> cumulative
                     </label>
                 </div>
                 <div>
@@ -285,24 +285,14 @@
                     }]
                 }, 
                 options: {
-                    legend: {
-                        position: "right"
-                    },
+                    legend: {position: "right"},
                     scales: {
                         xAxes: [{
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Date'
-                            }
+                            scaleLabel: {display: true, labelString: "Date"}
                         }],
                         yAxes: [{
-                            ticks: {
-                                min: 0
-                            },
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Number of Person'
-                            }
+                            ticks: {min: 0},
+                            scaleLabel: {display: true, labelString: "Number of Person"}
                         }]
                     },
                 }
@@ -388,24 +378,14 @@
                     }]
                 }, 
                 options: {
-                    legend: {
-                        position: "right"
-                    },
+                    legend: {position: "right"},
                     scales: {
                         xAxes: [{
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Date'
-                            }
+                            scaleLabel: {display: true, labelString: "Date"}
                         }],
                         yAxes: [{
-                            ticks: {
-                                min: 0
-                            },
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Number of Person'
-                            }
+                            ticks: {min: 0},
+                            scaleLabel: {display: true, labelString: "Number of Person"}
                         }]
                     },
                 }
@@ -440,14 +420,86 @@
 
         ///////////// percentage_chart /////////////////////////////////////
 
-        // let percentageChartContext = document.getElementById("percentage_chart").getContext("2d");
-        // let percentageChart = new Chart(percentageChartContext, { type: "line", data: chartData, options: chartOptions });
+        // onload:
+        let percentageChart = drawPercentageChart();
+
+        // on "new case"/"cumulative" clicked:
+        $("input[name='percentage_chart_mode']").on("click", function() {
+            percentageChart.destroy();
+            percentageChart = drawPercentageChart();
+        });
 
 
+        function drawPercentageChart() {
 
-        // this.chart.getDatasetMeta(legendItem.datasetIndex).hidden = true
-        // this.chart.update()
-        // see   https://codepen.io/jordanwillis/pen/BWKKKo?editors=0010
+            let mode = $("input[name='percentage_chart_mode']:checked").val();
+            let timeSeries = getTimeSeriesForPercentageChart(mode);
+
+            let context = $("#percentage_chart")[0].getContext("2d");
+
+            return new Chart(context, { 
+                type: "line", 
+                data: {
+                    labels: timeSeries.time,
+                    datasets: [{
+                        label: "China (Mainland)",
+                        backgroundColor: "#df2407",
+                        borderColor: "#df2407",
+                        cubicInterpolationMode: "monotone",
+                        data: timeSeries.chinaPercentage
+                    }]
+                }, 
+                options: {
+                    legend: {position: "right"},
+                    scales: {
+                        xAxes: [{
+                            scaleLabel: {display: true, labelString: "Date"}
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                min: 0,
+                                max: 1,
+                                callback: function (value) {
+                                    return (value * 100).toFixed(0) + "%";  // show tick label as percentages
+                                }
+                            }
+                        }]
+                    },
+                    tooltips: {
+                        callbacks: {
+                            label: function(tooltipItem, data) {
+                                return (tooltipItem.yLabel * 100).toFixed(1) + "%";  // show tooltip label as percentages
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function getTimeSeriesForPercentageChart(mode) {
+            if (mode !== "new_case" && mode !== "cumulative") {
+                throw "The mode requested is neither new_case nor cumulative.";
+            }
+
+            let timeSeries = {};
+            timeSeries.time = data.time;
+            timeSeries.china = data.case.find(x => x.region === "China (Mainland)").confirmed;
+            timeSeries.world = data.case.find(x => x.region === "World").confirmed;
+            // TODO: what if the region / case type is not found?
+
+            if (mode === "new_case") {
+                timeSeries.time = timeSeries.time.slice(1);  // remove first value
+                timeSeries.china = delta(timeSeries.china);
+                timeSeries.world = delta(timeSeries.world);
+            }
+
+            timeSeries.chinaPercentage = [];
+            for (let i = 0; i < timeSeries.china.length; i++) {
+                timeSeries.chinaPercentage[i] = timeSeries.china[i] / timeSeries.world[i];
+            }       
+
+            return timeSeries;
+        }
 
     </script>
 </body>
