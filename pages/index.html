@@ -215,9 +215,9 @@
         ///////////// populate region drop-down lists /////////////////////////////////////
 
         let optionString = "";
-        data.case.map(function(element) {
-            optionString += `<option value="${element.region}">${element.region}</option>`;
-        });
+        for (const region in data.counts) {
+            optionString += `<option value="${region}">${region}</option>`;
+        }
 
         $("#trend_chart_region").append(optionString);
         $("#death_to_recovery_chart_region").append(optionString);
@@ -301,8 +301,8 @@
             }
 
             let timeSeries = {};
-            timeSeries.time = data.time.slice();
-            timeSeries.region = data.case.find(x => x.region === region)[caseType].slice();
+            timeSeries.time = data.dates.slice();
+            timeSeries.region = data.counts[region][caseType].slice();
             // TODO: what if the region / case type is not found?
 
             if (mode === "new_case") {
@@ -400,10 +400,10 @@
             }
 
             let timeSeries = {};
-            timeSeries.time = data.time.slice();
-            timeSeries.confirmed = data.case.find(x => x.region === region).confirmed.slice();
-            timeSeries.recovered = data.case.find(x => x.region === region).recovered.slice();
-            timeSeries.death = data.case.find(x => x.region === region).death.slice();
+            timeSeries.time = data.dates.slice();
+            timeSeries.confirmed = data.counts[region]["confirmed"].slice();
+            timeSeries.recovered = data.counts[region]["recovered"].slice();
+            timeSeries.death = data.counts[region]["death"].slice();
             // TODO: what if the region / case type is not found?
 
             if (mode === "new_case") {
@@ -497,10 +497,10 @@
             }
 
             let timeSeries = {};
-            timeSeries.time = data.time.slice();
-            timeSeries.region1 = data.case.find(x => x.region === region1)[caseType].slice();
-            timeSeries.region2 = data.case.find(x => x.region === region2)[caseType].slice();
-            timeSeries.region3 = data.case.find(x => x.region === region3)[caseType].slice();
+            timeSeries.time = data.dates.slice();
+            timeSeries.region1 = data.counts[region1][caseType].slice();
+            timeSeries.region2 = data.counts[region2][caseType].slice();
+            timeSeries.region3 = data.counts[region3][caseType].slice();
             // TODO: what if the region / case type is not found?
 
             if (mode === "new_case") {
@@ -577,9 +577,9 @@
             }
 
             let timeSeries = {};
-            timeSeries.time = data.time.slice();
-            timeSeries.china = data.case.find(x => x.region === "China (Mainland)").confirmed.slice();
-            timeSeries.world = data.case.find(x => x.region === "World").confirmed.slice();
+            timeSeries.time = data.dates.slice();
+            timeSeries.china = data.counts["Mainland China"]["confirmed"].slice();
+            timeSeries.world = data.counts["World"]["confirmed"].slice();
             // TODO: what if the region / case type is not found?
 
             if (mode === "new_case") {

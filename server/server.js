@@ -62,8 +62,8 @@ world = {
 counts = [world join countries join provinces]
 
 data = {
-    date: [5,6,7],
-    count: {
+    dates: [5,6,7],
+    counts: {
         "Taiwan": {
             "confirmed": [1,2,3]
         }
