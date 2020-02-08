@@ -75,12 +75,12 @@
             </div>
             <div class="col-12 col-md-3 mb-3">
                 <h5>Curve Fitting</h5>
-                <div class="form-check">
+                <!-- <div class="form-check">
                     <input class="form-check-input" type="radio" name="trend_chart_curve_fitting" id="sigmoidal" value="sigmoidal">
                     <label class="form-check-label" for="sigmoidal">
                         sigmoidal
                     </label>
-                </div>
+                </div> -->
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="trend_chart_curve_fitting" id="exponential" value="exponential" checked>
                     <label class="form-check-label" for="exponential">
@@ -91,6 +91,12 @@
                     <input class="form-check-input" type="radio" name="trend_chart_curve_fitting" id="linear" value="linear">
                     <label class="form-check-label" for="linear">
                         linear
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="trend_chart_curve_fitting" id="none" value="none">
+                    <label class="form-check-label" for="none">
+                        none
                     </label>
                 </div>
             </div>
@@ -319,7 +325,13 @@
             }
 
             // curveFitting
-            let input = timeSeries.region.map((value, index) => [index, value]);  //make an array of [x,y] pairs
+            let input;
+            if (curveFitting === "none") {                                       // QUICK HACK to make the curve a horizontal line at -1 (out of the chart range) TODO: do it properly
+                input = new Array(timeSeries.region.length).fill(-1);
+                curveFitting = "linear";
+            } else {
+                input = timeSeries.region.map((value, index) => [index, value]);  //make an array of [x,y] pairs
+            }
             // const output = regression.exponential(input);
             let output = regression[curveFitting](input);
             timeSeries.curve = output.points.map(pair => pair[1]);
