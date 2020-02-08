@@ -110,7 +110,7 @@ async function main() {
         };
 
         dataJson = JSON.stringify(data);
-        fs.writeFileSync(path.join(__dirname, `../pages/data.js`), "let data = " + dataJson);
+        fs.writeFileSync(path.join(__dirname, `../data.js`), "let data = " + dataJson);
 
     } catch(e) {
         console.error(e);
