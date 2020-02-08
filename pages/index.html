@@ -24,7 +24,7 @@
         }
 
         .chart {
-            max-width: 60rem;
+            max-width: 45rem;
         }
 
         select {
@@ -211,6 +211,7 @@
 
     <script src="data.js"></script>
     <script>
+        data.dates = data.dates.map(date => date.slice(5));
         ///////////// helper functions /////////////////////////////////////
         
         function delta(array) {
@@ -271,7 +272,7 @@
                         label: region,
                         backgroundColor: "#f44336",
                         borderColor: "#f44336",
-                        pointRadius: 6,
+                        pointRadius: 5,
                         pointHoverRadius: 10,
                         showLine: false,
                         data: timeSeries.region
@@ -285,7 +286,8 @@
                     }]
                 }, 
                 options: {
-                    legend: {position: "right"},
+                    legend: {position: "bottom"},
+                    aspectRatio: 1.2,
                     scales: {
                         xAxes: [{
                             scaleLabel: {display: true, labelString: "Date"}
@@ -389,7 +391,8 @@
                     }]
                 }, 
                 options: {
-                    legend: {position: "right"},
+                    legend: {position: "bottom"},
+                    aspectRatio: 1.2,
                     scales: {
                         xAxes: [{
                             scaleLabel: {display: true, labelString: "Date"}
@@ -482,7 +485,8 @@
                     }]
                 }, 
                 options: {
-                    legend: {position: "right"},
+                    legend: { position: "bottom" },
+                    aspectRatio: 1.2,
                     scales: {
                         xAxes: [{
                             scaleLabel: {display: true, labelString: "Date"}
@@ -554,7 +558,8 @@
                     }]
                 }, 
                 options: {
-                    legend: {position: "right"},
+                    legend: { position: "bottom" },
+                    aspectRatio: 1.2,
                     scales: {
                         xAxes: [{
                             scaleLabel: {display: true, labelString: "Date"}
