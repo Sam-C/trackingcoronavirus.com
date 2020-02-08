@@ -1,6 +1,7 @@
 const rp = require("request-promise");
 const fs = require("fs");
 const papa = require("papaparse");
+const moment = require("moment");
 
 ////////////////////  data sources (CSV)  ////////////////////
 const dataSources = [{
@@ -77,15 +78,15 @@ async function main() {
     let data = {};
 
     try {
-        // for (let i = 0; i < dataSources.length; i++) {
-        for (let i = 0; i < 1; i++) { // for DEBUG
+        for (let i = 0; i < dataSources.length; i++) {
+        // for (let i = 0; i < 1; i++) { // for DEBUG
             let url = dataSources[i].url;
             let fileName = dataSources[i].caseType + ".csv";
 
-            let csvString = await rp(url);          // download csv from the web
-            fs.writeFileSync(fileName, csvString);  // save a copy to disk
+            // let csvString = await rp(url);          // download csv from the web
+            // fs.writeFileSync(fileName, csvString);  // save a copy to disk
 
-            // let csvString = fs.readFileSync(fileName, "utf8"); // for DEBUG
+            let csvString = fs.readFileSync(fileName, "utf8"); // for DEBUG
 
             let rows = papa.parse(csvString).data;  // convert to 2D-array
 
@@ -95,13 +96,23 @@ async function main() {
             rows = rows.slice(1);                    // remove the header row
             let counts = calculateRegionTotal(rows); // extract counts[]
 
-            console.log(counts);// for DEBUG
-            console.log(dates);// for DEBUG
+            // console.log(counts);// for DEBUG
+            // console.log(dates);// for DEBUG
 
-            // [trimmedDates, trimmedCount] = trim(dates, counts);   // keep 1 column for each date
-            // merge(data, trimmedDates, trimmedCount);              // merge into the data object
+            let [trimmedDates, trimmedCounts] = trim(dates, counts);   // keep 1 column for each date
+
+            // console.log(trimmedDates);// for DEBUG
+            // console.log(trimmedCounts);// for DEBUG
+
+            merge(data, trimmedDates, dataSources[i].caseType, trimmedCounts);              // merge into the data object
+
+            // console.log(data);// for DEBUG
 
         };
+
+        dataJson = JSON.stringify(data);
+        fs.writeFileSync("data.js", "let data = " + dataJson);
+
     } catch(e) {
         console.error(e);
     }
@@ -156,4 +167,45 @@ function sum(array1, array2) {
     array2 = array2 == undefined ? new Array(array1.length).fill(0) : array2;
 
     return array1.map( (value, index) => value + array2[index] );
+}
+
+function trim(dateTimes, counts) {
+    let dates = dateTimes.map(dateTime => 
+        moment(dateTime, "M-D-YYYY h:mm A").format("YYYY-MM-DD")  // input: "1/21/2020 10:00 PM", output "2020-01-21"
+    );
+
+    let willKeeps = new Array(dates.length).fill(false);
+    willKeeps[willKeeps.length - 1] = true;  //keep the latest date
+    for (let i = dates.length - 2; i >= 0; i--) {
+        if (dates[i] !== dates[i+1]) {       // date change?
+            willKeeps[i] = true;             // this is the latest column of this date -- keep it.
+        }
+    }
+
+    let trimmedDates = [];
+    let trimmedCounts = {};
+    for (const region in counts) {
+        trimmedCounts[region] = [];
+    }
+    for (let i = 0; i < dates.length; i++) {
+        if (willKeeps[i]) {
+            trimmedDates.push( dates[i] );                         // keep that date
+            for (const region in counts) {
+                trimmedCounts[region].push( counts[region][i] );   // keep that column for each region
+            }
+        }
+    }
+
+    return [trimmedDates, trimmedCounts];
+}
+
+function merge(data, dates, caseType, counts){
+    data.dates = dates;
+    data.counts = data.counts === undefined ? {} : data.counts;  // initialize data[counts] if needed
+    
+    for (region in counts) {
+        data.counts[region] = data.counts[region] === undefined ? {} : data.counts[region]; // initialize data[counts][region] if needed
+        data.counts[region][caseType] = counts[region];
+    }
+    return data;
 }
