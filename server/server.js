@@ -1,5 +1,6 @@
 const rp = require("request-promise");
 const fs = require("fs");
+const path = require("path");
 const papa = require("papaparse");
 const moment = require("moment");
 
@@ -60,8 +61,6 @@ world = {
 
 counts = [world join countries join provinces]
 
-conbinded.splice(startingIndex, deleteCount)
-
 data = {
     date: [5,6,7],
     count: {
@@ -83,10 +82,10 @@ async function main() {
             let url = dataSources[i].url;
             let fileName = dataSources[i].caseType + ".csv";
 
-            // let csvString = await rp(url);          // download csv from the web
-            // fs.writeFileSync(fileName, csvString);  // save a copy to disk
+            let csvString = await rp(url);          // download csv from the web
+            fs.writeFileSync(path.join(__dirname, `../csv/${fileName}`), csvString);  // save a copy to disk
 
-            let csvString = fs.readFileSync(fileName, "utf8"); // for DEBUG
+            // let csvString = fs.readFileSync(path.join(__dirname, `/csv/${fileName}`), "utf8"); // for DEBUG
 
             let rows = papa.parse(csvString).data;  // convert to 2D-array
 
@@ -111,7 +110,7 @@ async function main() {
         };
 
         dataJson = JSON.stringify(data);
-        fs.writeFileSync("data.js", "let data = " + dataJson);
+        fs.writeFileSync(path.join(__dirname, `../pages/data.js`), "let data = " + dataJson);
 
     } catch(e) {
         console.error(e);
