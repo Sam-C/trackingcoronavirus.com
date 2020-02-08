@@ -238,6 +238,12 @@
         $("#region_comparison_chart_region_2").append(optionString);
         $("#region_comparison_chart_region_3").append(optionString);
 
+        // start with different regions selected
+        $("#region_comparison_chart_region_1 option[value='US']").attr("selected", "selected");
+        $("#region_comparison_chart_region_2 option[value='UK']").attr("selected", "selected");
+        $("#region_comparison_chart_region_3 option[value='Canada']").attr("selected", "selected");
+        
+
         ///////////// trend_chart /////////////////////////////////////
 
         // onload:
