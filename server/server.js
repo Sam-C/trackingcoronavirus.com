@@ -83,6 +83,7 @@ async function main() {
             let fileName = dataSources[i].caseType + ".csv";
 
             let csvString = await rp(url);          // download csv from the web
+            csvString = csvString.replace(/\n$/, "");
             fs.writeFileSync(path.join(__dirname, `../csv/${fileName}`), csvString);  // save a copy to disk
 
             // let csvString = fs.readFileSync(path.join(__dirname, `/csv/${fileName}`), "utf8"); // for DEBUG
